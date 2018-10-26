@@ -375,6 +375,25 @@ def test_ansible_module_become(host):
                             check=False, become=True)['stdout'] == 'root'
 
 
+@pytest.mark.testinfra_hosts("ansible://debian_stretch")
+def test_ansible_module_become_method(host):
+    user_name = host.user().name
+    assert host.ansible('shell', 'echo $USER',
+                        check=False)['stdout'] == user_name
+    assert host.ansible('shell', 'echo $USER',
+                        check=False, become=True, become_method="su")['stdout'] == 'root'
+
+
+@pytest.mark.testinfra_hosts("ansible://debian_stretch")
+def test_ansible_module_become_user(host):
+    user_name = host.user().name
+    host.ansible('user', 'name=test')
+    assert host.ansible('shell', 'echo $USER',
+                        check=False)['stdout'] == user_name
+    assert host.ansible('shell', 'echo $USER',
+                        check=False, become=True, become_method="su", become_user="test")['stdout'] == 'test'
+
+
 @pytest.mark.destructive
 def test_supervisor(host):
     # Wait supervisord is running
