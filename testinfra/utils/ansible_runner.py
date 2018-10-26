@@ -199,6 +199,10 @@ class AnsibleRunnerV2(AnsibleRunnerBase):
     def run(self, host, module_name, module_args=None, **kwargs):
         self.cli.options.check = kwargs.get("check", False)
         self.cli.options.become = kwargs.get("become", False)
+        if 'become_user' in kwargs:
+            self.cli.options.become_user = kwargs.get("become_user", False)
+        if 'become_method' in kwargs:
+            self.cli.options.become_method = kwargs.get("become_method", False)
         action = {"module": module_name}
         if module_args is not None:
             if module_name in ("command", "shell"):
